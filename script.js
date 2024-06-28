@@ -5,6 +5,14 @@ function calculateUpsell() {
     const startDate = new Date(document.getElementById('start-date').value);
     const migrationDate = new Date(document.getElementById('migration-date').value);
     const discount = parseFloat(document.getElementById('discount').value);
+    
+    // Verificação se os campos estão preenchidos corretamente
+    if (isNaN(currentPlan) || isNaN(newPlan) || isNaN(discount)) {
+        document.getElementById('result').textContent = 'Por favor, preencha todos os campos corretamente.';
+        document.getElementById('result-extenso').textContent = '';
+        return;
+    }
+
     const renewalDate = new Date(startDate);
     renewalDate.setFullYear(renewalDate.getFullYear() + 1);
 
