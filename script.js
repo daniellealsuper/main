@@ -4,10 +4,10 @@ function calculateUpsell() {
     const newPlan = parseFloat(document.getElementById('new-plan').value);
     const startDate = new Date(document.getElementById('start-date').value);
     const migrationDate = new Date(document.getElementById('migration-date').value);
-    const discount = parseFloat(document.getElementById('discount').value);
+    const discount = parseFloat(document.getElementById('discount').value) || 0; // Se o campo de desconto estiver vazio, considera 0
     
     // Verificação se os campos estão preenchidos corretamente
-    if (isNaN(currentPlan) || isNaN(newPlan) || isNaN(discount)) {
+    if (isNaN(currentPlan) || isNaN(newPlan)) {
         document.getElementById('result').textContent = 'Por favor, preencha todos os campos corretamente.';
         document.getElementById('result-extenso').textContent = '';
         return;
