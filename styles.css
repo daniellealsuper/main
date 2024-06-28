@@ -59,3 +59,11 @@ button:hover {
     font-size: 18px;
     font-weight: bold;
 }
+
+.updated {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+    padding: 10px;
+    margin-top: 10px;
+}
