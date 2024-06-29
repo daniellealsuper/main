@@ -60,41 +60,4 @@ function numeroParaExtenso(valor) {
     const centavos = parseInt(partes[1] || '0', 10);
 
     const extensoReais = convertToWords(reais) + ' reais';
-    const extensoCentavos = centavos > 0 ? ' e ' + convertToWords(centavos) + ' centavos' : '';
-
-    return extensoReais + extensoCentavos;
-}
-
-function convertToWords(number) {
-    if (number === 0) return 'zero';
-
-    const partes = [];
-    let unidade, dezena, centena, milhar;
-
-    if (number >= 1000) {
-        milhar = Math.floor(number / 1000);
-        partes.push(milhar === 1 ? 'mil' : unidades[milhar] + ' mil');
-        number %= 1000;
-    }
-
-    if (number >= 100) {
-        centena = Math.floor(number / 100);
-        partes.push(centena === 1 && number % 100 === 0 ? 'cem' : centenas[centena]);
-        number %= 100;
-    }
-
-    if (number >= 20) {
-        dezena = Math.floor(number / 10);
-        partes.push(dezenas[dezena]);
-        number %= 10;
-    } else if (number >= 10) {
-        partes.push(especiais[number - 10]);
-        number = 0;
-    }
-
-    if (number > 0) {
-        partes.push(unidades[number]);
-    }
-
-    return partes.join(' e ');
-}
+    const extensoCentavos
