@@ -1,12 +1,24 @@
 // script.js
+document.getElementById('current-plan').addEventListener('input', formatCurrency);
+document.getElementById('new-plan').addEventListener('input', formatCurrency);
+document.getElementById('discount').addEventListener('input', formatCurrency);
+
+function formatCurrency(event) {
+    let input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+    value = (value / 100).toFixed(2); // Divide por 100 e fixa em 2 casas decimais
+    value = value.replace('.', ','); // Substitui ponto por vírgula
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Adiciona pontos a cada 3 dígitos
+    input.value = `R$ ${value}`;
+}
+
 function calculateUpsell() {
-    const currentPlan = parseFloat(document.getElementById('current-plan').value);
-    const newPlan = parseFloat(document.getElementById('new-plan').value);
+    const currentPlan = parseFloat(document.getElementById('current-plan').value.replace(/[R$\s.]/g, '').replace(',', '.'));
+    const newPlan = parseFloat(document.getElementById('new-plan').value.replace(/[R$\s.]/g, '').replace(',', '.'));
     const startDate = new Date(document.getElementById('start-date').value);
     const migrationDate = new Date(document.getElementById('migration-date').value);
-    const discount = parseFloat(document.getElementById('discount').value) || 0; // Se o campo de desconto estiver vazio, considera 0
-    
-    // Verificação se os campos estão preenchidos corretamente
+    const discount = parseFloat(document.getElementById('discount').value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+
     if (isNaN(currentPlan) || isNaN(newPlan)) {
         document.getElementById('result').textContent = 'Por favor, preencha todos os campos corretamente.';
         document.getElementById('result-extenso').textContent = '';
@@ -31,33 +43,21 @@ function calculateUpsell() {
     
     let difference = newPlanProportional - amountRemaining - discount;
 
-    // Atualiza o resultado na página
-    document.getElementById('result').textContent = `Valor a ser cobrado para migração: R$${difference.toFixed(2)}`;
-    document.getElementById('result-extenso').textContent = `Valor por extenso: ${numeroParaExtenso(difference.toFixed(2))}`;
+    const formattedDifference = difference.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    document.getElementById('result').textContent = `Valor a ser cobrado para migração: R$ ${formattedDifference}`;
+    document.getElementById('result-extenso').textContent = `Valor por extenso: ${capitalizeWords(numeroParaExtenso(difference.toFixed(2)))}`;
 
-    // Limpa o campo de desconto após o cálculo
     document.getElementById('discount').value = '';
 
-    // Adiciona uma classe para destacar o resultado atualizado
     document.getElementById('result').classList.add('updated');
     document.getElementById('result-extenso').classList.add('updated');
 
-    // Remove a classe após um breve período para remover o destaque
     setTimeout(() => {
         document.getElementById('result').classList.remove('updated');
         document.getElementById('result-extenso').classList.remove('updated');
-    }, 3000); // Remove a classe após 3 segundos (3000 milissegundos)
+    }, 3000);
 }
 
 function numeroParaExtenso(valor) {
-    const unidades = ['','um','dois','três','quatro','cinco','seis','sete','oito','nove'];
-    const dezenas = ['','dez','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
-    const centenas = ['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
-    const especiais = ['dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
-
-    const partes = valor.split('.');
-    const reais = parseInt(partes[0], 10);
-    const centavos = parseInt(partes[1] || '0', 10);
-
-    const extensoReais = convertToWords(reais) + ' reais';
-    const extensoCentavos
+    const
