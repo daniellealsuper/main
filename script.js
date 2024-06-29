@@ -60,4 +60,39 @@ function calculateUpsell() {
 }
 
 function numeroParaExtenso(valor) {
-    const
+    const unidades = ['','um','dois','três','quatro','cinco','seis','sete','oito','nove'];
+    const dezenas = ['','dez','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+    const centenas = ['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+    const especiais = ['dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
+
+    const partes = valor.split('.');
+    const reais = parseInt(partes[0], 10);
+    const centavos = parseInt(partes[1] || '0', 10);
+
+    const extensoReais = extenso(reais);
+    const extensoCentavos = extenso(centavos);
+
+    let resultado = extensoReais + (reais === 1 ? ' real' : ' reais');
+
+    if (centavos > 0) {
+        resultado += ' e ' + extensoCentavos + (centavos === 1 ? ' centavo' : ' centavos');
+    }
+
+    return resultado;
+}
+
+function extenso(numero) {
+    if (numero < 10) return unidades[numero];
+    if (numero < 20) return especiais[numero - 10];
+    if (numero < 100) {
+        return dezenas[Math.floor(numero / 10)] + (numero % 10 === 0 ? '' : ' e ' + unidades[numero % 10]);
+    }
+    if (numero < 1000) {
+        return centenas[Math.floor(numero / 100)] + (numero % 100 === 0 ? '' : ' e ' + extenso(numero % 100));
+    }
+    return '';
+}
+
+function capitalizeWords(str) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+}
