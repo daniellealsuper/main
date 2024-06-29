@@ -12,10 +12,10 @@
             <h1>Calculadora de Upsell de Plano Anual</h1>
             <form id="calculator-form">
                 <label for="current-plan">Valor anual do plano atual (R$):</label>
-                <input type="number" id="current-plan" required>
+                <input type="text" id="current-plan" required>
                 
                 <label for="new-plan">Valor anual do novo plano (R$):</label>
-                <input type="number" id="new-plan" required>
+                <input type="text" id="new-plan" required>
 
                 <label for="start-date">Data de contratação do plano atual:</label>
                 <input type="date" id="start-date" required>
@@ -24,7 +24,7 @@
                 <input type="date" id="migration-date" required>
                 
                 <label for="discount">Desconto (R$):</label>
-                <input type="number" id="discount">
+                <input type="text" id="discount">
                 
                 <button type="button" onclick="calculateUpsell()">Calcular</button>
             </form>
@@ -48,7 +48,7 @@
         </div>
     </div>
     <footer>
-        <p><b>Observação</b>: O cálculo do upsell é realizado com base nos meses completos usados e restantes. O valor mensal do plano atual é subtraído do valor proporcional do novo plano para o período restante, aplicando-se o desconto, se houver.</p>
+        <p><strong>Observação:</strong> O cálculo do upsell é realizado com base nos meses completos usados e restantes. O valor mensal do plano atual é subtraído do valor proporcional do novo plano para o período restante, aplicando-se o desconto, se houver.</p>
     </footer>
     <script src="script.js"></script>
 </body>
