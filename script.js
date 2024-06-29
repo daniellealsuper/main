@@ -13,21 +13,20 @@ function formatCurrency(event) {
 }
 
 function calculateUpsell() {
-    const currentPlanValue = document.getElementById('current-plan').value.replace(/[R$\s.]/g, '').replace(',', '.');
-    const newPlanValue = document.getElementById('new-plan').value.replace(/[R$\s.]/g, '').replace(',', '.');
-    const discountValue = document.getElementById('discount').value.replace(/[R$\s.]/g, '').replace(',', '.');
-
-    const currentPlan = parseFloat(currentPlanValue);
-    const newPlan = parseFloat(newPlanValue);
+    const currentPlan = parseFloat(document.getElementById('current-plan').value.replace(/[R$\s.]/g, '').replace(',', '.'));
+    const newPlan = parseFloat(document.getElementById('new-plan').value.replace(/[R$\s.]/g, '').replace(',', '.'));
     const startDate = new Date(document.getElementById('start-date').value);
     const migrationDate = new Date(document.getElementById('migration-date').value);
-    const discount = parseFloat(discountValue) || 0;
+    const discount = parseFloat(document.getElementById('discount').value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
 
     if (isNaN(currentPlan) || isNaN(newPlan)) {
         document.getElementById('result').textContent = 'Por favor, preencha todos os campos corretamente.';
         document.getElementById('result-extenso').textContent = '';
         return;
     }
+
+    const renewalDate = new Date(startDate);
+    renewalDate.setFullYear(renewalDate.getFullYear() + 1);
 
     const startMonth = startDate.getMonth();
     const migrationMonth = migrationDate.getMonth();
