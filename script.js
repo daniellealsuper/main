@@ -26,7 +26,7 @@ function calculateUpsell() {
     }
 
     if (startDate > migrationDate) {
-        document.getElementById('result').textContent = 'A Data de Contratação do Plano Atual, não pode ser maior que a Data de Migração para o Novo Plano.';
+        document.getElementById('result').textContent = 'A data de dontratação do plano Atual, não pode ser maior que a data de migração para o novo plano.';
         document.getElementById('result-extenso').textContent = '';
         return;
     }
