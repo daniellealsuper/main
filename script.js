@@ -51,7 +51,7 @@ function calculateUpsell() {
 
     const formattedDifference = difference.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     
-    document.getElementById('result').textContent = `Valor a ser cobrado para migração: R$ ${formattedDifference}`;
+    document.getElementById('result').textContent = `Valor da diferança a ser cobrada para migração de plano: R$ ${formattedDifference}`;
     document.getElementById('result-extenso').textContent = `Valor por extenso: ${capitalizeWords(numeroParaExtenso(difference.toFixed(2)))}`;
 
     document.getElementById('discount').value = '';
