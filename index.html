@@ -1,55 +1,142 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Upsell Plano Anual</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <div class="calculator">
-            <h1>Calculadora de Upsell Plano Anual</h1>
-            <form id="calculator-form">
-                <label for="current-plan">Valor anual do plano atual (R$):</label>
-                <input type="text" id="current-plan" required>
-                
-                <label for="new-plan">Valor anual do novo plano (R$):</label>
-                <input type="text" id="new-plan" required>
+// Função para formatar o valor como R$
+function formatCurrency(event) {
+    let input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+    value = (value / 100).toFixed(2); // Divide por 100 e fixa em 2 casas decimais
+    value = value.replace('.', ','); // Substitui ponto por vírgula
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Adiciona pontos a cada 3 dígitos
+    value = `R$ ${value}`; // Adiciona o símbolo de R$
+    input.value = value;
+}
 
-                <label for="start-date">Data de contratação do plano atual:</label>
-                <input type="date" id="start-date" required>
+// Adiciona os listeners para os campos de valor
+document.getElementById('current-plan').addEventListener('input', formatCurrency);
+document.getElementById('new-plan').addEventListener('input', formatCurrency);
+document.getElementById('discount').addEventListener('input', formatCurrency);
 
-                <label for="migration-date">Data de migração para o novo plano:</label>
-                <input type="date" id="migration-date" required>
-                
-                <label for="discount">Desconto (R$):</label>
-                <input type="text" id="discount">
-                
-                <button type="button" onclick="calculateUpsell()">Calcular</button>
-            </form>
-            <div id="result"></div>
-            <div id="result-extenso"></div>
-        </div>
-        <div class="example">
-            <h2>Exemplo de Cálculo:</h2>
-            <p>Plano atual: R$17.533,80/ano</p>
-            <p>Novo plano: R$19.471,80/ano</p>
-            <p>Data de contratação: 25/01/2024</p>
-            <p>Data de migração: 25/07/2024</p>
-            <p>Meses utilizados: 6</p>
-            <p>Meses restantes: 6</p>
-            <p>Valor mensal do plano atual: R$17.533,80 ÷ 12(meses) = R$1.461,15</p>
-            <p>Valor mensal do novo plano: R$19.471,80 ÷ 12(meses) = R$1.622,65</p>
-            <p>Valor do plano atual utilizado: R$1.461,15 x 6(meses) = R$8.766,90</p>
-            <p>Valor proporcional do novo plano para os meses restantes: R$1.622,65 x 6(meses) = R$9.735,90</p>
-            <p>Desconto aplicado: R$0,00</p>
-            <p>Calculo da diferença dos meses restantes: R$9.735,90 - R$8.766,90 = R$969,00 (Diferença a ser cobrada) </p>
-        </div>
-    </div>
-    <footer>
-        <p><strong>Observação:</strong> O cálculo do upsell é realizado com base nos meses completos usados e restantes. O valor mensal do plano atual é subtraído do valor proporcional do novo plano para o período restante, aplicando-se o desconto, se houver.</p>
-    </footer>
-    <script src="script.js"></script>
-</body>
-</html>
+// Função principal de cálculo
+function calculateUpsell() {
+    // Captura e formata os valores dos planos e desconto
+    const currentPlan = parseFloat(document.getElementById('current-plan').value.replace(/[R$\s.]/g, '').replace(',', '.'));
+    const newPlan = parseFloat(document.getElementById('new-plan').value.replace(/[R$\s.]/g, '').replace(',', '.'));
+    const startDate = new Date(document.getElementById('start-date').value);
+    const migrationDate = new Date(document.getElementById('migration-date').value);
+    const discount = parseFloat(document.getElementById('discount').value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+
+    // Validações
+    if (isNaN(currentPlan) || isNaN(newPlan)) {
+        document.getElementById('result').textContent = 'Por favor, preencha todos os campos corretamente.';
+        document.getElementById('result-extenso').textContent = '';
+        document.getElementById('detalhes-calculo').textContent = '';
+        return;
+    }
+
+    if (startDate > migrationDate) {
+        document.getElementById('result').textContent = 'A data de contratação do plano Atual não pode ser maior que a data de migração para o novo plano.';
+        document.getElementById('result-extenso').textContent = '';
+        document.getElementById('detalhes-calculo').textContent = '';
+        return;
+    }
+
+    // Cálculo da data de renovação
+    const renewalDate = new Date(startDate);
+    renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+
+    // Cálculo dos meses utilizados e restantes
+    const startMonth = startDate.getMonth();
+    const migrationMonth = migrationDate.getMonth();
+    const monthsUsed = migrationMonth - startMonth;
+    const monthsRemaining = 12 - monthsUsed;
+
+    // Cálculo dos valores mensais
+    const currentMonthly = currentPlan / 12;
+    const newMonthly = newPlan / 12;
+
+    // Cálculo dos valores proporcionais
+    const amountUsed = currentMonthly * monthsUsed;
+    const amountRemaining = currentPlan - amountUsed;
+    const newPlanProportional = newMonthly * monthsRemaining;
+
+    // Cálculo da diferença
+    let difference = newPlanProportional - amountRemaining - discount;
+
+    // Formatação e exibição do resultado
+    const formattedDifference = difference.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    document.getElementById('result').textContent = `Valor da diferença a ser cobrada para migração de plano: R$ ${formattedDifference}`;
+    document.getElementById('result-extenso').textContent = `Valor por extenso: ${capitalizeWords(numeroParaExtenso(difference.toFixed(2)))}`;
+
+    // Exibe os detalhes do cálculo
+    exibirDetalhesCalculo(currentPlan, newPlan, monthsUsed, monthsRemaining, currentMonthly, newMonthly, amountUsed, amountRemaining, newPlanProportional, discount, difference);
+
+    // Limpa o campo de desconto e adiciona efeito visual
+    document.getElementById('discount').value = '';
+    document.getElementById('result').classList.add('updated');
+    document.getElementById('result-extenso').classList.add('updated');
+
+    setTimeout(() => {
+        document.getElementById('result').classList.remove('updated');
+        document.getElementById('result-extenso').classList.remove('updated');
+    }, 3000);
+}
+
+// Função para exibir os detalhes do cálculo
+function exibirDetalhesCalculo(currentPlan, newPlan, monthsUsed, monthsRemaining, currentMonthly, newMonthly, amountUsed, amountRemaining, newPlanProportional, discount, difference) {
+    const detalhes = `
+        <h3>Detalhes do Cálculo:</h3>
+        <p><strong>Valor Total do Plano Atual:</strong> R$ ${currentPlan.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Valor Total do Novo Plano:</strong> R$ ${newPlan.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Meses Utilizados do Plano Atual:</strong> ${monthsUsed} meses</p>
+        <p><strong>Meses Restantes do Plano Atual:</strong> ${monthsRemaining} meses</p>
+        <p><strong>Valor Mensal do Plano Atual:</strong> R$ ${currentMonthly.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Valor Mensal do Novo Plano:</strong> R$ ${newMonthly.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Valor Utilizado do Plano Atual:</strong> R$ ${amountUsed.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Valor Restante do Plano Atual:</strong> R$ ${amountRemaining.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Valor Proporcional do Novo Plano:</strong> R$ ${newPlanProportional.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Desconto Aplicado:</strong> R$ ${discount.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+        <p><strong>Diferença Calculada:</strong> R$ ${difference.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+    `;
+
+    document.getElementById('detalhes-calculo').innerHTML = detalhes;
+}
+
+// Função para converter número para extenso
+function numeroParaExtenso(valor) {
+    const unidades = ['','um','dois','três','quatro','cinco','seis','sete','oito','nove'];
+    const dezenas = ['','dez','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+    const centenas = ['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+    const especiais = ['dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
+
+    const partes = valor.split('.');
+    const reais = parseInt(partes[0], 10);
+    const centavos = parseInt(partes[1] || '0', 10);
+
+    const extensoReais = extenso(reais);
+    const extensoCentavos = extenso(centavos);
+
+    let resultado = extensoReais + (reais === 1 ? ' real' : ' reais');
+
+    if (centavos > 0) {
+        resultado += ' e ' + extensoCentavos + (centavos === 1 ? ' centavo' : ' centavos');
+    }
+
+    return resultado;
+}
+
+// Função auxiliar para converter números em extenso
+function extenso(numero) {
+    if (numero < 10) return unidades[numero];
+    if (numero < 20) return especiais[numero - 10];
+    if (numero < 100) {
+        return dezenas[Math.floor(numero / 10)] + (numero % 10 === 0 ? '' : ' e ' + unidades[numero % 10]);
+    }
+    if (numero < 1000) {
+        return centenas[Math.floor(numero / 100)] + (numero % 100 === 0 ? '' : ' e ' + extenso(numero % 100));
+    }
+    return '';
+}
+
+// Função para capitalizar palavras
+function capitalizeWords(str) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+}
