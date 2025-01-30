@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Upsell Plano Anual</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Upsell Plano Anual</h1>
+        <form id="upsell-form">
+            <div class="form-group">
+                <label for="current-plan">Plano Atual (R$):</label>
+                <input type="text" id="current-plan" placeholder="R$ 0,00">
+            </div>
+            <div class="form-group">
+                <label for="new-plan">Novo Plano (R$):</label>
+                <input type="text" id="new-plan" placeholder="R$ 0,00">
+            </div>
+            <div class="form-group">
+                <label for="start-date">Data de Contratação do Plano Atual:</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="form-group">
+                <label for="migration-date">Data de Migração para o Novo Plano:</label>
+                <input type="date" id="migration-date">
+            </div>
+            <div class="form-group">
+                <label for="discount">Desconto (R$):</label>
+                <input type="text" id="discount" placeholder="R$ 0,00">
+            </div>
+            <button type="button" onclick="calculateUpsell()">Calcular</button>
+        </form>
+        <div id="result" class="result"></div>
+        <div id="result-extenso" class="result-extenso"></div>
+        <div id="detalhes-calculo" class="detalhes-calculo"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
